@@ -5,9 +5,9 @@ namespace Domain.Abstractions
     public interface IAuthorRepository
     {
         Task<IEnumerable<Author>> GetAllAsync();
-        Task<Author> GetAsync();
-        Task<Author> CreateAsync();
-        Task<Author> UpdateAsync();
-        Task<bool> DeleteAsync();
+        Task<Author> GetAsync(int id);
+        Task<Author> CreateAsync(Author author);
+        Task<Author> UpdateAsync(int id, Author author);
+        Task<bool> DeleteAsync(int id);
     }
 }
