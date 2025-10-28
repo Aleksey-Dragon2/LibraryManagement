@@ -1,4 +1,5 @@
-﻿using Domain.Abstractions;
+﻿using Application.Abstractions;
+using Domain.Abstractions;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
         public BookService(IBookRepository bookRepository)
