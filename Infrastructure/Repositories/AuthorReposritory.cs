@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstractions;
+using Domain.Entities;
 using Infrastructure.DB;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class AuthorReposritory
+    public class AuthorReposritory : IAuthorRepository
     {
         private readonly ApplicationContext _context;
 
