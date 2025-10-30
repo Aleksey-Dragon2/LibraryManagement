@@ -1,6 +1,4 @@
 ﻿using Application.Abstractions;
-using Application.Services;
-using Domain.Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.DTOs.Book.Request;
@@ -55,14 +53,20 @@ namespace Presentation.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await _bookService.CreateAsync(new Book
+            try
             {
-                Title = dto.Title,
-                PublisherYear = dto.PublisherYear,
-                AuthorId = dto.AuthorId,
-            });
-            return Ok(response);
-
+                var response = await _bookService.CreateAsync(new Book
+                {
+                    Title = dto.Title,
+                    PublisherYear = dto.PublisherYear,
+                    AuthorId = dto.AuthorId,
+                });
+                return Ok(response);
+            }
+            catch (AuthorNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<BookController>/5
@@ -71,23 +75,30 @@ namespace Presentation.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            try
+            {
+                var existingBook = await _bookService.GetAsync(id);
+                if (existingBook == null)
+                    return NotFound();
 
-            var existingBook = await _bookService.GetAsync(id);
-            if (existingBook == null)
-                return NotFound();
+                existingBook.Title = dto.Title;
+                existingBook.PublisherYear = dto.PublisherYear;
+                existingBook.AuthorId = dto.AuthorId;
 
-            existingBook.Title = dto.Title;
-            existingBook.PublisherYear = dto.PublisherYear;
-            existingBook.AuthorId = dto.AuthorId;
+                await _bookService.UpdateAsync(id, existingBook);
 
-            await _bookService.UpdateAsync(id, existingBook);
-
-            var response = new BookResponseDto(
-                existingBook.Id,
-                existingBook.Title,
-                existingBook.PublisherYear,
-                existingBook.AuthorId);
-            return Ok(response);
+                var response = new BookResponseDto(
+                    existingBook.Id,
+                    existingBook.Title,
+                    existingBook.PublisherYear,
+                    existingBook.AuthorId);
+                return Ok(response);
+            }
+            catch (AuthorNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
 
 
