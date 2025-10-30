@@ -12,9 +12,11 @@ namespace Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
-        public BookService(IBookRepository bookRepository)
+        private readonly IAuthorService _authorService;
+        public BookService(IBookRepository bookRepository, IAuthorService authorService)
         {
             _bookRepository = bookRepository;
+            _authorService = authorService;
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
@@ -29,11 +31,19 @@ namespace Application.Services
 
         public async Task<Book> CreateAsync(Book book)
         {
+            var author = await _authorService.GetAsync(book.AuthorId);
+            if (author == null)
+                throw new AuthorNotFoundException(book.AuthorId);
+
             return await _bookRepository.CreateAsync(book);
         }
 
         public async Task<Book> UpdateAsync(int id, Book book)
         {
+            var author = await _authorService.GetAsync(book.AuthorId);
+            if (author == null)
+                throw new AuthorNotFoundException(book.AuthorId);
+
             return await _bookRepository.UpdateAsync(id, book);
         }
 
