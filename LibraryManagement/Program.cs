@@ -4,6 +4,7 @@ using Application.Services;
 using Domain.Abstractions;
 using Infrastructure.DB;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presintation
 {
@@ -21,10 +22,14 @@ namespace Presintation
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IAuthorService, AuthorService>();
-            builder.Services.AddScoped<IBookRepository, BookRepository>();
-            builder.Services.AddScoped<IAuthorRepository, AuthorReposritory>();
-            builder.Services.AddSingleton<ApplicationContext>();
+            builder.Services.AddScoped<IQueryService, QueryService>();
 
+            builder.Services.AddScoped<IBookRepository, BookDbRepository>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorDbRepository>();
+            builder.Services.AddScoped<IQueryRepository, QueryDbRepository>();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+            opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
